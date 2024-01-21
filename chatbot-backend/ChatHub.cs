@@ -3,9 +3,16 @@ using System.Threading.Tasks;
 
 public class ChatHub : Hub
 {
+    private readonly OpenAIClient openAIClient;
+
+    public ChatHub(OpenAIClient openAIClient){
+        this.openAIClient = openAIClient;
+    }
+
     public async Task SendMessage(string message)
     {
         // Respond back to the SvelteKit app
-        await Clients.Caller.SendAsync("ReceiveMessage", "Okay, got it. Let me help you with that.");
+        var response = await openAIClient.GetAssistantResponse(message);
+        await Clients.Caller.SendAsync("ReceiveMessage", response);
     }
 }
